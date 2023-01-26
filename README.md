@@ -155,3 +155,261 @@ Include all units, test behavior.
         ```
     - In the above example: `link` is used for `<a></a>`
 - Role docs: https://www.w3.org/TR/wai-aria/#role_definitions
+
+<hr />
+
+## Simple App to Test a Button Functionalities
+
+#### Example:
+Test if a role is button and text of it is "Change to blue". expect the background color to be "red".
+
+```javascript
+//App.js
+function App() {
+  return (
+    <div className="App">
+      <button
+      style={{backgroundColor: "red"}}
+      onClick={()=> setBg(!bg) }
+      >
+        Change to blue"
+      </button>
+    </div>
+  );
+}
+
+
+
+//App.test.js
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('Button has correct initial color', () => {
+  render(<App/>);
+  const colorButton = screen.getByRole("button", {name:"Change to blue"});
+  expect(colorButton).toHaveStyle({backgroundColor:"red"})
+});
+
+```
+
+#### Example:
+- First Test: 
+    - Test if a role is button and text of it is "Change to blue". expect the background color to be "red".
+    - when the button is clicked then test if a role is button and text of it is "Change to red". expect the background color to be "blue".
+
+```javascript
+
+//App.js
+function App() {
+  const [bg, setBg] = useState(false)
+  return (
+    <div className="App">
+      <button
+      style={!bg?{backgroundColor: "red"}: {backgroundColor:"blue"}}
+      onClick={()=> setBg(!bg) }
+      >
+        {!bg?"Change to blue": "Change to red"}
+      </button>
+
+
+      <input type="checkbox"/>
+    </div>
+  );
+}
+
+
+
+//App.test.js
+test('Button has correct initial color', () => {
+  render(<App/>);
+  const colorButton = screen.getByRole("button", {name:"Change to blue"});
+  expect(colorButton).toHaveStyle({backgroundColor:"red"})
+
+  //click button to change background color to blue
+  fireEvent.click(colorButton);
+  expect(colorButton).toHaveStyle({backgroundColor:"blue"})
+  expect(colorButton.textContent).toBe("Change to red")
+
+  //click button to change background color to red
+  fireEvent.click(colorButton);
+  expect(colorButton).toHaveStyle({backgroundColor:"red"})
+  expect(colorButton.textContent).toBe("Change to blue")
+});
+
+
+
+test("initial conditions", () => {
+  render(<App/>);
+
+  const colorButton = screen.getByRole("button", {name:"Change to blue"});
+  expect(colorButton).toBeEnabled();
+
+  const checkBox = screen.getByRole("checkbox");
+  expect(checkBox).not.toBeChecked()
+})
+```
+
+
+#### Example: Checkbox-Functionality
+When checkbox is checked, button should be disabled.
+
+```javascript
+
+//App.js
+function App() {
+  const [disabled, setDisabled] = useState(false)
+
+  return (
+    <div className="App">
+      <button disabled={disabled}>
+        {disabled? "Disable" : "Enable"}
+      </button>
+      <input 
+      type="checkbox" 
+      onChange={(e) => setDisabled(e.target.checked)}/>
+    </div>
+  );
+}
+
+
+//App.test.js
+test('CheckBox functionality is working', () => {
+  render(<App/>);
+  const button = screen.getByRole("button", {name:"Enable"});
+  const checkBox = screen.getByRole("checkbox");
+
+  fireEvent.click(checkBox)
+
+  expect(checkBox).toBeChecked();
+  expect(button).toBeDisabled()
+});
+
+```
+
+
+#### Example: Find Checkbox with label
+Use the above example but add another checkbox with no name.
+
+```javascript
+
+//App.js
+function App() {
+  const [disabled, setDisabled] = useState(false)
+
+  return (
+    <div className="App">
+      <button disabled={disabled}>
+        {disabled? "Disable" : "Enable"}
+      </button>
+
+      <input 
+      type="checkbox"/>
+
+      <input 
+      type="checkbox"
+      id ="enable-button-checkbox"
+      onChange={(e) => setDisabled(e.target.checked)}/>
+
+      <label htmlFor='enable-button-checkbox'>Disable Button</label>
+    </div>
+  );
+}
+
+
+//App.test.js
+test('Label CheckBox functionality is working', () => {
+  render(<App/>);
+  const button = screen.getByRole("button", {name:"Enable"});
+  const checkBox = screen.getByRole("checkbox", {name:"Disable Button"});
+
+  fireEvent.click(checkBox)
+
+  expect(checkBox).toBeChecked();
+  expect(button).toBeDisabled()
+});
+
+```
+
+#### Example: Red Button Turns Gray When Disabled and Vice Versa
+
+```javascript
+
+//app.js
+function App() {
+  const [disabled, setDisabled] = useState(false)
+
+  return (
+    <div className="App">
+      <button 
+      disabled={disabled}
+      style={disabled? {backgroundColor:"gray", color:"black"}: {backgroundColor:'red'}}
+      >
+        {disabled? "Disable" : "Enable"}
+      </button>
+
+
+      <input 
+      type="checkbox"
+      id ="enable-button-checkbox"
+      onChange={(e) => setDisabled(e.target.checked)}/>
+
+      <label htmlFor='enable-button-checkbox'>Disable Button</label>
+      
+      <input 
+      type="checkbox"/>
+    </div>
+  );
+}
+
+
+
+//App.test.js
+test('Red button turns gray as it is disabled and vice versa', () => {
+  render(<App/>);
+  const button = screen.getByRole("button", {name:"Enable"});
+  const checkBox = screen.getByRole("checkbox", {name: "Disable Button"});
+
+  expect(button).toHaveStyle('backgroundColor: red');
+  fireEvent.click(checkBox)
+  expect(checkBox).toBeChecked();
+  expect(button).toBeDisabled()
+  expect(button).toHaveStyle('backgroundColor: gray');
+
+  fireEvent.click(checkBox)
+  expect(button).toBeEnabled();
+  expect(button).toHaveStyle('backgroundColor: red');
+});
+
+```
+
+
+#### Example Unit Test Function:
+
+```javascript
+
+//app.js
+export function replaceCamelWithSpaces(colorName) {
+  //MidnightBlue -> Midnight Blue
+  return colorName.replace(/\B([A-Z])\B/g, ' $1')
+}
+
+
+//app.test.js
+//Group multiple tests
+describe("Spaces before camelCase capital letter", ()=>{
+
+  test('for One inner capital letter',()=>{
+    expect(replaceCamelWithSpaces("Red")).toBe("Red")
+  });
+
+  test('joined camelCase letter',()=>{
+    expect(replaceCamelWithSpaces("MidnightGreen")).toBe("Midnight Green")
+  });
+
+  test('long camelCase letter',()=>{ 
+    expect(replaceCamelWithSpaces("RedGreenYellowBlue")).toBe("Red Green Yellow Blue")
+  });
+
+})
+
+```
