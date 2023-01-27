@@ -158,7 +158,7 @@ Include all units, test behavior.
 
 <hr />
 
-## Simple App to Test a Button Functionalities
+## Simple Apps to Test Functionalities
 
 #### Example:
 Test if a role is button and text of it is "Change to blue". expect the background color to be "red".
@@ -286,7 +286,6 @@ test('CheckBox functionality is working', () => {
 
 ```
 
-
 #### Example: Find Checkbox with label
 Use the above example but add another checkbox with no name.
 
@@ -333,7 +332,6 @@ test('Label CheckBox functionality is working', () => {
 #### Example: Red Button Turns Gray When Disabled and Vice Versa
 
 ```javascript
-
 //app.js
 function App() {
   const [disabled, setDisabled] = useState(false)
@@ -346,7 +344,6 @@ function App() {
       >
         {disabled? "Disable" : "Enable"}
       </button>
-
 
       <input 
       type="checkbox"
@@ -387,29 +384,87 @@ test('Red button turns gray as it is disabled and vice versa', () => {
 
 ```javascript
 
-//app.js
+//App.js
 export function replaceCamelWithSpaces(colorName) {
   //MidnightBlue -> Midnight Blue
   return colorName.replace(/\B([A-Z])\B/g, ' $1')
 }
 
 
-//app.test.js
+//App.test.js
+
 //Group multiple tests
 describe("Spaces before camelCase capital letter", ()=>{
-
   test('for One inner capital letter',()=>{
     expect(replaceCamelWithSpaces("Red")).toBe("Red")
   });
-
   test('joined camelCase letter',()=>{
     expect(replaceCamelWithSpaces("MidnightGreen")).toBe("Midnight Green")
   });
-
   test('long camelCase letter',()=>{ 
     expect(replaceCamelWithSpaces("RedGreenYellowBlue")).toBe("Red Green Yellow Blue")
   });
-
 })
+```
+
+
+#### Example: Update Test for New Color Names
+In the beginning of the app, button color is MediumVioletRed, when clicked it changes to MidnightBlue. And when checkbox is checked it changes to gray and disables.
+
+```javascript
+//App.js
+function App() {
+  const [disabled, setDisabled] = useState(false)
+  const [btnColor, setBtnColor] = useState("MediumVioletRed")
+
+  const newBtnColor = btnColor === "MediumVioletRed" ? "MidnightBlue" : "MediumVioletRed"
+
+  return (
+    <div className="App">
+      <button 
+      disabled={disabled}
+      style={{backgroundColor: disabled ?"gray" : btnColor, color:"black"}}
+      onClick={() => setBtnColor(newBtnColor)}
+      >
+        {disabled? "Disable" : "Enable"}
+      </button>
+
+      <input 
+      type="checkbox"
+      id ="enable-button-checkbox"
+      onChange={(e) => setDisabled(e.target.checked)}/>
+
+      <label htmlFor='enable-button-checkbox'>
+        Disable Button
+      </label>
+    </div>
+  );
+}
+
+
+
+//App.test.js
+  test('New Color Name',()=>{
+    render(<App/>)
+    const btnColor = screen.getByRole("button", {name: "Enable"})
+    const checkBox = screen.getByRole("checkbox", {name: "Disable Button"})
+
+    expect(btnColor).toHaveStyle('backgroundColor: MediumVioletRed')
+    expect(checkBox).not.toBeChecked()
+
+    //when click on button.
+    fireEvent.click(btnColor);
+    expect(btnColor).toHaveStyle('backgroundColor: MidnightBlue')
+
+
+    //when checkbox is checked
+    fireEvent.click(checkBox);
+    expect(btnColor).toHaveStyle('backgroundColor:gray');
+    expect(btnColor).toBeDisabled()
+    expect(checkBox).toBeChecked()
+  });
 
 ```
+
+### When to Unit Test
+- 
