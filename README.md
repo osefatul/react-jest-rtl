@@ -564,4 +564,134 @@ test("checkbox disables button", () => {
 })
 
 ```
+write the above code using bootstrap library.
 
+```javascript
+function SummaryForm() {
+    const [checked, setChecked] = useState(false)
+
+    const popover = (
+        <Popover id="popover-basic">
+            <Popover.Body>No ice cream will actually be delivered</Popover.Body>
+        </Popover>
+    );
+
+    const checkboxLabel = (
+        <span>
+            I agree to
+            <OverlayTrigger placement="right" overlay={popover}>
+                <span style={{ color: "blue" }}> Terms and Conditions</span>
+            </OverlayTrigger>
+        </span>
+    );
+    
+    return (
+    <Form>
+        <Form.Group controlId="terms-and-conditions">
+            <Form.Check
+            type="checkbox"
+            checked={checked}
+            onChange={e=> setChecked(e.target.checked)}
+            label={checkboxLabel}
+            >
+            </Form.Check>
+        
+        <Button variant="primary" type="submit" disabled={!checked}>
+            Confirm Order
+        </Button>
+        </Form.Group>
+    </Form>
+    )
+}
+```
+
+
+### User Event.
+- use `userEvent` for more flexible operations of user interaction with UI, than `fireEvent`.
+- use `npm i @testing-library/user-event @testing-library/dom --save-dev` to install user event.
+- replace `fireEvent` with `userEvent` in the above testing code.
+- Setup `useEvent` first.
+
+```javascript
+
+//App.test.jsx
+test('checkbox and button before have been clicked', () => {
+    render(<SummaryForm/>)
+    const checkbox = screen.getByRole("checkbox", {name: /terms and conditions/i});
+    expect(checkbox).not.toBeChecked();
+    
+    const confirmButton = screen.getByRole("button", { name: /confirm order/i });
+    expect(confirmButton).toBeDisabled();
+});
+    
+
+test("Checkbox enables button on first click and disables on second click", async () => {
+    const user = userEvent.setup();
+
+    render(<SummaryForm />);
+    const checkbox = screen.getByRole("checkbox", {name: /terms and conditions/i,});
+    const confirmButton = screen.getByRole("button", { name: /confirm order/i });
+    
+    await user.click(checkbox);
+    expect(confirmButton).toBeEnabled();
+    expect(checkbox).toBeChecked()
+    
+    await user.click(checkbox);
+    expect(confirmButton).toBeDisabled();
+});
+```
+
+
+### `screen` Query Methods
+
+**command[All]ByQueryType()**
+
+- command:
+    - get: expect element to be in DOM
+    - query: expect element no to be in DOM.
+    - find: expect element to appear async.
+
+- [All]
+    - (exclude): expect only one element.
+    - (include): expect more than one element.
+
+- QueryType
+    - Role: (most Preferred)
+    - AllText: image
+    - Text: display elements
+    - Form elements:
+        - PlaceholderText
+        - LabelText
+        - DisplayValue
+
+
+### External links 
+- [React-Bootstrap-JavaScript-Globals](https://react-bootstrap.netlify.app/getting-started/introduction#browser-globals)
+
+- [React-Bootstrap-CSS-Import](https://react-bootstrap.netlify.app/getting-started/introduction#css)
+
+- [React-Testing-Library-Cheat-Sheet](https://testing-library.com/docs/react-testing-library/cheatsheet/)
+
+- [Jest-DOM-Documentation](https://github.com/testing-library/jest-dom)
+
+- [user-event-GitHub-Documentation](https://github.com/testing-library/user-event)
+
+- [user-event-API-reference](https://testing-library.com/docs/ecosystem-user-event/)
+
+- [Testing-Library-API-Queries-Documentation](https://testing-library.com/docs/dom-testing-library/api-queries)
+
+- [React-Testing-Library-Cheat-Sheet](https://testing-library.com/docs/react-testing-library/cheatsheet/)
+
+- [Testing-Library-Query-Priority](https://testing-library.com/docs/queries/about/#priority)
+
+- [user-event-GitHub-Documentation](https://github.com/testing-library/user-event)
+
+- [React-Testing-Library-Cheat-Sheet](https://testing-library.com/docs/react-testing-library/cheatsheet/)
+
+- [React-Bootstrap-Popover](https://react-bootstrap.netlify.app/components/overlays/#popovers)
+
+- [Testing-Library-Documentation-about-Wrapping-in-Act](https://testing-library.com/docs/preact-testing-library/api#act)
+
+- [Kent-C.Dodds-Blog-Post-about-Not-Wrapped-in-Act-warning](https://kentcdodds.com/blog/fix-the-not-wrapped-in-act-warning)
+
+- [Testing-Library-Appearance-Disappearance-Guide](https://testing-library.com/docs/guide-disappearance)
