@@ -1,8 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import SummaryForm from '../SummaryForm';
 
-
-
 test('checkbox and button before have been clicked', () => {
     render(<SummaryForm/>)
     const btn = screen.getByRole("button", {name:"Confirm Order"})

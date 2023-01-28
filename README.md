@@ -506,3 +506,62 @@ function App() {
 <hr />
 
 ## Sundaes on Demand
+#### Summary Form components.
+Create a `SummaryForm.jsx` and `SummaryForm.test.jsx` file for testing that components. The task is to check a box which enables the button. Once code is written then run `npm test`
+
+```javascript
+
+function SummaryForm() {
+    const [checked, setChecked] = useState(false)
+    
+    return (
+    <div>
+        <input
+        type="checkbox"
+        id="termConditions"
+        onChange={(e)=> setChecked(e.target.checked)}
+        />
+        <label htmlFor="termConditions">terms and conditions</label>
+
+        <button
+        disabled = {!checked}
+        >
+            Confirm Order
+        </button>
+    </div>
+    )
+}
+
+
+
+//SummaryFrom.test.jsx
+import { fireEvent, render, screen } from '@testing-library/react';
+import SummaryForm from '../SummaryForm';
+
+
+test('checkbox and button before have been clicked', () => {
+    render(<SummaryForm/>)
+    const btn = screen.getByRole("button", {name:"Confirm Order"})
+    const checkbox = screen.getByRole("checkbox", {name: /terms and conditions/i})
+
+    expect(checkbox).not.toBeChecked();
+    expect(btn).toBeDisabled();
+})
+
+
+test("checkbox disables button", () => {
+    render(<SummaryForm/>)
+    const checkbox = screen.getByRole("checkbox", {name:/terms and conditions/i})
+    const btn = screen.getByRole("button", {name:"Confirm Order"})
+
+    fireEvent.click(checkbox);
+    expect(btn).toBeEnabled();
+    expect(checkbox).toBeChecked();
+
+    fireEvent.click(checkbox);
+    expect(btn).toBeDisabled();
+    expect(checkbox).not.toBeChecked()
+})
+
+```
+
