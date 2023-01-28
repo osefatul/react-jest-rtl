@@ -156,6 +156,7 @@ Include all units, test behavior.
     - In the above example: `link` is used for `<a></a>`
 - Role docs: https://www.w3.org/TR/wai-aria/#role_definitions
 
+
 <hr />
 
 ## Simple Apps to Test Functionalities
@@ -466,5 +467,42 @@ function App() {
 
 ```
 
-### When to Unit Test
-- 
+<hr/>
+
+## ESLint for Testing Library and Jest-DOM
+- `npm i eslint-plugin-testing-library eslint-plugin-jest-dom`
+- In package.json file, delete `eslintConfig` object.
+- Create another file named `.eslintrc.json`.
+- add below code in the above eslint file.
+
+```javascript
+{
+    "plugins": [
+        "testing-library",
+        "jest-dom"
+    ],
+    "extends": [
+        "react-app",
+        "react-app/jest",
+        "plugin:testing-library/react",
+        "plugin:jest-dom/recommended"
+    ]
+}
+```
+
+- Configure ESLint in VSCode:
+    - create folder/file `.vscode/settings.json`
+    - Add
+    ```javascript
+    {
+        "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+        }
+    }
+    ```
+- Install eslint extension.
+
+
+<hr />
+
+## Sundaes on Demand
