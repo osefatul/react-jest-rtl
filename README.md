@@ -1,7 +1,7 @@
 # JEST & RTL
 
 ## Introductions
-
+This course incorporates all types of testing from vanilla javascript to react and components using Jest and React testing library.
 ### What does RTL do?
 - Creates virtual DOM for testing and utilities for interacting with DOM.
 - Allows testing without a browser.
